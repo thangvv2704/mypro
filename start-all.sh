@@ -25,7 +25,16 @@ while IFS= read -r key || [ -n "$key" ]; do
     docker rm -f "$name"
   fi
 
-  docker run -d --name "$name" -e DATAGRAM_KEY="$key" $IMAGE_NAME
+  # Khởi chạy với giới hạn RAM và tự restart
+  docker run -d \
+    --name "$name" \
+    --memory="115m" \
+    --memory-swap="115m" \
+    --oom-kill-disable=false \
+    --restart=always \
+    -e DATAGRAM_KEY="$key" \
+    $IMAGE_NAME
+
   ((i++))
 done < "$NODE_FILE"
 
